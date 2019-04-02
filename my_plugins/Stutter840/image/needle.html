@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+canvas {
+  background-color: #000;
+}
+  </style>
+  <body>
+    <h1>Animation needle</h1>
+    <p><a id="download_1x" href="">Rendering...</a></p>
+    <p><a id="download_2x" href="">Rendering...</a></p>
+    <p><a id="download_3x" href="">Rendering...</a></p>
+    <canvas id="canvas_1x" width="128" height="12928"></canvas>
+    <canvas id="canvas_2x" width="256" height="25856"></canvas>
+    <canvas id="canvas_3x" width="384" height="38784"></canvas>
+    <script>
+function render(scale) {
+  let suffix = parseInt(scale) + "x";
+  let canvas = document.querySelector("#canvas_" + suffix);
+  let ctx = canvas.getContext("2d");
+  let r =48 * scale;
+  let sr = 3.5 * scale;
+  let beginAngle = Math.PI * 1;
+  let lineWidth = 2.3;
+
+  for (let i = 0; i < 101; i++) {
+    let ratio = i / 100;
+
+    let x = 64 * scale;
+    let y = 64 * scale + 128 * scale * i;
+
+    let rad = beginAngle + Math.PI * ratio;
+    let tx = r * Math.cos(rad);
+    let ty = r * Math.sin(rad);
+
+    let drad = Math.PI / 2;
+    let lx = sr * Math.cos(rad - drad);
+    let ly = sr * Math.sin(rad - drad);
+    let rx = sr * Math.cos(rad + drad);
+    let ry = sr * Math.sin(rad + drad);
+
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(tx + x, ty + y);
+    ctx.lineTo(lx + x, ly + y);
+    ctx.lineTo(rx + x, ry + y);
+    ctx.closePath();
+
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = lineWidth * scale;
+    ctx.stroke();
+
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x, y, sr, 0, Math.PI * 2, false);
+    ctx.closePath();
+
+    ctx.lineWidth = lineWidth * scale * 2;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+
+    ctx.fillStyle = "#888";
+    ctx.fill();
+  }
+
+  let fileName = "needle_" + suffix + ".png";
+  let a = document.querySelector("#download_" + suffix);
+  a.href = canvas.toDataURL("image/png");
+  a.setAttribute("download", fileName);
+  a.innerHTML = "Download " + fileName;
+}
+
+render(1.0);
+render(2.0);
+render(3.0);
+</script>
+  </body>
+</html>

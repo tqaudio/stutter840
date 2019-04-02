@@ -1,0 +1,3 @@
+add_subdirectory(Stutter840)
+add_subdirectory(Stutter840auv2)
+add_subdirectory(Stutter840aax)
