@@ -7,7 +7,7 @@
 	<colors>
 		<color name="UnitCColor" rgba="#c3c3c3ff"/>
 	</colors>
-	<template background-color="~ BlackCColor" class="CViewContainer" name="Stutter840" size="480, 480" transparent="false">
+	<template background-color="~ BlackCColor" class="CViewContainer" name="Stutter840" size="480, 240" transparent="false">
 		<!-- MIN DENOMINATOR -->
 		<view back-color="~ TransparentCColor" class="CTextEdit" control-tag="Parameters::kMinDenominatorId" font="DenominatorFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="48, 72" size="128, 32" text-alignment="center" title="0.00" transparent="false"/>
 		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFontVeryBig" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="48, 112" size="128, 24" text-alignment="center" title="MIN" transparent="false"/>
@@ -20,20 +20,6 @@
 		<view back-color="~ TransparentCColor" class="CTextEdit" control-tag="Parameters::kMaxDenominatorId" font="DenominatorFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="304, 72" size="128, 32" text-alignment="center" title="0.00" transparent="false"/>
 		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFontVeryBig" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="304, 112" size="128, 24" text-alignment="center" title="MAX" transparent="false"/>
 		<view back-color="~ TransparentCColor" class="CTextLabel" font="DarkFont" font-antialias="true" font-color="UnitCColor" opacity="1" origin="304, 132" size="128, 24" text-alignment="center" title="DENOMINATOR" transparent="false"/>
-		<!-- TRIGGER -->
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="160, 240" size="80, 24" text-alignment="left" title="TRIGGER" transparent="false"/>
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="256, 240" size="80, 24" text-alignment="left" title="NOTE ON" transparent="false"/>
-		<!-- RELEASE -->
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="160, 272" size="80, 24" text-alignment="left" title="RELEASE" transparent="false"/>
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="256, 272" size="80, 24" text-alignment="left" title="NOTE OFF" transparent="false"/>
-		<!-- CHANNEL -->
-		<view back-color="~ TransparentCColor"  class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="160, 304" size="80, 24" text-alignment="left" title="CHANNEL" transparent="false"/>
-		<view back-color="~ TransparentCColor" background-offset="0, 0" class="CTextEdit" control-tag="Parameters::kNoteChannelId" default-value="0.5" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" frame-color="~ TransparentCColor" frame-width="1" immediate-text-change="false" max-value="1" min-value="0" mouse-enabled="true" opacity="1" origin="256, 304" round-rect-radius="6" shadow-color="~ BlackCColor" size="80, 24" style-3D-in="false" style-3D-out="false" style-doubleclick="false" style-no-draw="false" style-no-frame="false" style-no-text="false" style-round-rect="true" style-shadow-text="false" text-alignment="left" text-inset="5, 0" text-rotation="0" title="0.00" transparent="false" value-precision="2" wheel-inc-value="0.1"/>
-		<!-- NOTE NAME -->
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="160, 336" size="80, 24" text-alignment="left" title="NOTE NAME" transparent="false"/>
-		<view back-color="~ TransparentCColor" background-offset="0, 0" class="CTextEdit" control-tag="Parameters::kNoteNumberId" default-value="0.5" font="~ NormalFont" font-antialias="true" font-color="~ WhiteCColor" frame-color="~ TransparentCColor" frame-width="1" immediate-text-change="false" max-value="1" min-value="0" mouse-enabled="true" opacity="1" origin="256, 336" round-rect-radius="6" shadow-color="~ BlackCColor" size="80, 24" style-3D-in="false" style-3D-out="false" style-doubleclick="false" style-no-draw="false" style-no-frame="false" style-no-text="false" style-round-rect="true" style-shadow-text="false" text-alignment="left" text-inset="5, 0" text-rotation="0" title="0.00" transparent="false" value-precision="2" wheel-inc-value="0.1"/>
-		<!-- PRODUCT NAME -->
-		<view back-color="~ TransparentCColor" class="CTextLabel" font="ProductNameFont" font-antialias="true" font-color="~ WhiteCColor" opacity="1" origin="0, 424" size="480, 24" text-alignment="center" title="Stutter840" transparent="false"/>
 	</template>
 	<custom>
 	</custom>
@@ -50,7 +36,5 @@
 		<control-tag name="Parameters::kRatioId" tag="101"/>
 		<control-tag name="Parameters::kMinDenominatorId" tag="102"/>
 		<control-tag name="Parameters::kMaxDenominatorId" tag="103"/>
-		<control-tag name="Parameters::kNoteChannelId" tag="104"/>
-		<control-tag name="Parameters::kNoteNumberId" tag="105"/>
 	</control-tags>
 </vstgui-ui-description>

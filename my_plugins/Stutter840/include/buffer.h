@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math.h>
+#include "constants.h"
 
 namespace Stutter840 {
 enum LoopState { kEnabled = 100, kDisabled = 101 };
@@ -21,17 +21,17 @@ public:
   double read();
   void write(double value);
 
-protected:
-  int mSampleRate;
-  int mCapacity;
-  int mReadHead;
-  int mWriteHead;
-  int mLoopEndPosition;
-  LoopState mLoopState;
-  double mTempo;
-  double mRatio;
-  int mMinDenominator;
-  int mMaxDenominator;
-  double *mBuffer;
+private:
+  int mSampleRate;                                   // e.g. 44100 (Hz)
+  int mCapacity;                                     // e.g. 441000 (samples)
+  double mTempo = 120.0;                             // e.g. 120.0 (bpm)
+  double mRatio = Constants::defaultRatioNormalized; // e.g.
+  int mMinDenominator = Constants::defaultMinDenominator;
+  int mMaxDenominator = Constants::defaultMaxDenominator;
+  int mReadHead = 0;
+  int mWriteHead = 0;
+  int mLoopEndPosition = 0;
+  LoopState mLoopState = LoopState::kDisabled;
+  double *mBuffer = nullptr;
 };
 } // namespace Stutter840

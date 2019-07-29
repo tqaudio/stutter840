@@ -1,15 +1,15 @@
 #pragma once
 
-#include "id.h"
-#include "parameter.h"
-
 #include "base/source/fstreamer.h"
-#include "buffer.h"
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/vst/ivstevents.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstprocesscontext.h"
 #include "public.sdk/source/vst/vstaudioeffect.h"
+
+#include "buffer.h"
+#include "id.h"
+#include "parameter.h"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
@@ -34,18 +34,16 @@ public:
   tresult PLUGIN_API setState(IBStream *state) SMTG_OVERRIDE;
   tresult PLUGIN_API getState(IBStream *state) SMTG_OVERRIDE;
 
-protected:
-  Buffer *mBuffer[2];
+private:
+  AutomationParameter *mRatios = nullptr;
+  AutomationParameter *mNoteOns = nullptr;
+  AutomationParameter *mNoteOffs = nullptr;
 
-  AutomationParameter *mNoteOns;
-  AutomationParameter *mNoteOffs;
-  AutomationParameter *mRatios;
+  bool mBypass = false;
+  ParamValue mRatio = Constants::defaultRatioNormalized;
+  ParamValue mMinDenominator = Constants::defaultMinDenominatorNormalized;
+  ParamValue mMaxDenominator = Constants::defaultMaxDenominatorNormalized;
 
-  bool mBypass;
-  ParamValue mRatio;
-  ParamValue mMinDenominator;
-  ParamValue mMaxDenominator;
-  ParamValue mNoteChannel;
-  ParamValue mNoteNumber;
+  Buffer **mBuffer = nullptr;
 };
 } // namespace Stutter840

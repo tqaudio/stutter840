@@ -1,14 +1,7 @@
 #include "../include/processor.h"
 
 namespace Stutter840 {
-Processor::Processor()
-    : mBypass(false), mRatio(DEFAULT_RATIO_NORMALIZED),
-      mMinDenominator(DEFAULT_MIN_DENOMINATOR_NORMALIZED),
-      mMaxDenominator(DEFAULT_MAX_DENOMINATOR_NORMALIZED),
-      mNoteChannel(DEFAULT_MIDI_CHANNEL_NORMALIZED),
-      mNoteNumber(DEFAULT_MIDI_NOTE_NORMALIZED) {
-  setControllerClass(ControllerID);
-}
+Processor::Processor() { setControllerClass(ControllerID); }
 
 tresult PLUGIN_API Processor::initialize(FUnknown *context) {
   tresult result = AudioEffect::initialize(context);
@@ -52,22 +45,29 @@ tresult PLUGIN_API Processor::setActive(TBool state) {
     return kResultFalse;
   }
   if (state) {
-    for (int channel = 0; channel < channelCount; channel++) {
-      mBuffer[channel] = new Buffer(processSetup.sampleRate, MAX_DURATION);
-      mBuffer[channel]->setMinDenominator(mMinDenominator * BASE_DENOMINATOR);
-      mBuffer[channel]->setMaxDenominator(mMaxDenominator * BASE_DENOMINATOR);
-      mBuffer[channel]->setRatio(mRatio);
-    }
+    mRatios = new AutomationParameter[processSetup.maxSamplesPerBlock];
     mNoteOns = new AutomationParameter[processSetup.maxSamplesPerBlock];
     mNoteOffs = new AutomationParameter[processSetup.maxSamplesPerBlock];
-    mRatios = new AutomationParameter[processSetup.maxSamplesPerBlock];
+    mBuffer = new Buffer *[channelCount];
+
+    for (int channel = 0; channel < channelCount; channel++) {
+      mBuffer[channel] =
+          new Buffer(processSetup.sampleRate, Constants::maxDuration);
+      mBuffer[channel]->setMinDenominator(mMinDenominator *
+                                          Constants::baseDenominator);
+      mBuffer[channel]->setMaxDenominator(mMaxDenominator *
+                                          Constants::baseDenominator);
+      mBuffer[channel]->setRatio(mRatio);
+    }
   } else {
     for (int channel = 0; channel < channelCount; channel++) {
       delete mBuffer[channel];
     }
-    delete mNoteOns;
-    delete mNoteOffs;
-    delete mRatios;
+
+    delete[] mRatios;
+    delete[] mNoteOns;
+    delete[] mNoteOffs;
+    delete mBuffer;
   }
 
   return AudioEffect::setActive(state);
@@ -106,7 +106,7 @@ tresult PLUGIN_API Processor::process(ProcessData &data) {
       }
       switch (paramQueue->getParameterId()) {
       case Parameters::kBypassId:
-        mBypass = (value > 0.5f);
+        mBypass = (value > 0.5);
         break;
       case Parameters::kRatioId:
         mRatio = value;
@@ -115,19 +115,13 @@ tresult PLUGIN_API Processor::process(ProcessData &data) {
         break;
       case Parameters::kMinDenominatorId:
         mMinDenominator = value;
-        mBuffer[0]->setMinDenominator(value * BASE_DENOMINATOR);
-        mBuffer[1]->setMinDenominator(value * BASE_DENOMINATOR);
+        mBuffer[0]->setMinDenominator(value * Constants::baseDenominator);
+        mBuffer[1]->setMinDenominator(value * Constants::baseDenominator);
         break;
       case Parameters::kMaxDenominatorId:
         mMaxDenominator = value;
-        mBuffer[0]->setMaxDenominator(value * BASE_DENOMINATOR);
-        mBuffer[1]->setMaxDenominator(value * BASE_DENOMINATOR);
-        break;
-      case Parameters::kNoteChannelId:
-        mNoteChannel = value;
-        break;
-      case Parameters::kNoteNumberId:
-        mNoteNumber = value;
+        mBuffer[0]->setMaxDenominator(value * Constants::baseDenominator);
+        mBuffer[1]->setMaxDenominator(value * Constants::baseDenominator);
         break;
       }
     }
@@ -143,8 +137,6 @@ tresult PLUGIN_API Processor::process(ProcessData &data) {
       }
 
       int sampleOffset = incomingEvent.sampleOffset;
-      int noteNumber = round(mNoteNumber * 128.0f);
-      int noteChannel = round(mNoteChannel * 16.0f);
 
       if (sampleOffset < 0) {
         sampleOffset = 0;
@@ -154,21 +146,9 @@ tresult PLUGIN_API Processor::process(ProcessData &data) {
       }
       switch (incomingEvent.type) {
       case Event::kNoteOnEvent:
-        if (noteNumber <= 127 && noteNumber != incomingEvent.noteOn.pitch ||
-            noteChannel > 0 &&
-                (noteChannel - 1) != incomingEvent.noteOn.channel) {
-          break;
-        }
-
         mNoteOns[sampleOffset].hasChanged = true;
         break;
       case Event::kNoteOffEvent:
-        if (noteNumber <= 127 && noteNumber != incomingEvent.noteOn.pitch ||
-            noteChannel > 0 &&
-                (noteChannel - 1) != incomingEvent.noteOn.channel) {
-          break;
-        }
-
         mNoteOffs[sampleOffset].hasChanged = true;
         break;
       }
@@ -223,12 +203,10 @@ tresult PLUGIN_API Processor::setState(IBStream *state) {
   }
 
   IBStreamer streamer(state, kLittleEndian);
-  int32 savedBypass = 0;
-  float savedRatio = 0.0f;
-  float savedMinDenominator = 0.0f;
-  float savedMaxDenominator = 0.0f;
-  float savedNoteChannel = 0.0f;
-  float savedNoteNumber = 0.0f;
+  int32 savedBypass{0};
+  float savedRatio{0.0};
+  float savedMinDenominator{0.0};
+  float savedMaxDenominator{0.0};
 
   if (!streamer.readInt32(savedBypass)) {
     return kResultFalse;
@@ -242,19 +220,11 @@ tresult PLUGIN_API Processor::setState(IBStream *state) {
   if (!streamer.readFloat(savedMaxDenominator)) {
     return kResultFalse;
   }
-  if (!streamer.readFloat(savedNoteChannel)) {
-    return kResultFalse;
-  }
-  if (!streamer.readFloat(savedNoteNumber)) {
-    return kResultFalse;
-  }
 
   mBypass = savedBypass > 0;
   mRatio = savedRatio;
   mMinDenominator = savedMinDenominator;
   mMaxDenominator = savedMaxDenominator;
-  mNoteChannel = savedNoteChannel;
-  mNoteNumber = savedNoteNumber;
 
   return kResultTrue;
 }
@@ -265,15 +235,11 @@ tresult PLUGIN_API Processor::getState(IBStream *state) {
   float saveRatio = mRatio;
   float saveMinDenominator = mMinDenominator;
   float saveMaxDenominator = mMaxDenominator;
-  float saveNoteChannel = mNoteChannel;
-  float saveNoteNumber = mNoteNumber;
 
   streamer.writeInt32(saveBypass);
   streamer.writeFloat(saveRatio);
   streamer.writeFloat(saveMinDenominator);
   streamer.writeFloat(saveMaxDenominator);
-  streamer.writeFloat(saveNoteChannel);
-  streamer.writeFloat(saveNoteNumber);
 
   return kResultTrue;
 }

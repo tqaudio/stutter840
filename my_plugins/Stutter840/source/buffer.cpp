@@ -1,19 +1,11 @@
+#include <math.h>
+
 #include "../include/buffer.h"
 
-#include <stdio.h>
-
 namespace Stutter840 {
-Buffer::Buffer(int sampleRate, double capacity /* ms */)
-    : mSampleRate(sampleRate), mCapacity(sampleRate * capacity / 1000.0f),
-      mReadHead(0), mWriteHead(0), mLoopEndPosition(0), mRatio(0.0f),
-      mTempo(120.0f), mLoopState(kDisabled), mMinDenominator(8),
-      mMaxDenominator(64) {
-  mBuffer = new double[mCapacity];
-
-  for (int i = 0; i < mCapacity; i++) {
-    mBuffer[i] = 0.0f;
-  }
-}
+Buffer::Buffer(int sampleRate, double maxDuration /* ms */)
+    : mSampleRate(sampleRate), mCapacity(sampleRate * maxDuration / 1000.0),
+      mBuffer(new double[mCapacity]{}) {}
 
 Buffer::~Buffer() { delete[] mBuffer; }
 
@@ -31,7 +23,7 @@ double Buffer::read() {
   }
 
   double p = (double)mReadHead / (double)mLoopEndPosition;
-  double gain = 1.0f - pow(p, 7.912f);
+  double gain = 1.0 - pow(p, 7.912);
 
   return result * gain;
 }
@@ -76,9 +68,9 @@ void Buffer::setMaxDenominator(double denominator) {
 }
 
 void Buffer::setRatio(double ratio) {
-  double base = (double)mSampleRate * 60.0f / mTempo;
+  double base = (double)mSampleRate * 60.0 / mTempo;
   double denominator =
-      (mMinDenominator + (mMaxDenominator - mMinDenominator) * ratio) / 4.0f;
+      (mMinDenominator + (mMaxDenominator - mMinDenominator) * ratio) / 4.0;
 
   mRatio = ratio;
   mLoopEndPosition = (int)(base / denominator);
